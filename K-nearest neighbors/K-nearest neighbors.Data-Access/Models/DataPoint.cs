@@ -1,6 +1,7 @@
 ﻿using K_nearest_neighbors.Common.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +14,16 @@ namespace K_nearest_neighbors.Data_Access.Models
         public float X { get; set; }
         public float Y { get; set; }
         public int? AssignedClassification { get; set; }
+
+        public DataPoint()
+        {
+
+        }
+
+        public DataPoint(DataPointDto dataPointDto)
+        {
+            FromDto(dataPointDto);
+        }
 
         public void FromDto(IGenericDto dto)
         {

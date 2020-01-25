@@ -41,7 +41,7 @@ namespace K_nearest_neighbors.Models
             {
                 leastDistant.Add(dataObject);
                 i++;
-                if (i < amount)
+                if (i > amount)
                     break;
             }
 

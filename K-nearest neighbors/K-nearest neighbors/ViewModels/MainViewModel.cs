@@ -6,12 +6,26 @@ using K_nearest_neighbors.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Windows.Media;
 
 namespace K_nearest_neighbors.ViewModels
 {
     public class MainViewModel : Screen
     {
+        private DataPointDto _newPoint;
+
+        public DataPointDto NewPoint
+        {
+            get { return _newPoint; }
+            set 
+            { 
+                _newPoint = value;
+                NotifyOfPropertyChange(() => NewPoint);
+            }
+        }
+
+
         private Point _canvasMesurements;
 
         public Point CanvasMesurements
@@ -73,13 +87,22 @@ namespace K_nearest_neighbors.ViewModels
 
         public MainViewModel()
         {
+            NewPoint = new DataPointDto() { X = 1, Y = 1
+        };
             CurrentKValue = 1;
+            GetPoints();
+        }
+
+        public void AddPoint()
+        {
+            var pointRepository = new DataPointRepository(new ClassificationContext());
+            pointRepository.CreateNewDataPoint(NewPoint);
             GetPoints();
         }
 
         private void GetPoints()
         {
-
+            Thread.Sleep(100);
             Points = new BindableCollection<ColoredDataPoint>();
             _classifiedDataPoints = new Dictionary<int, List<ColoredDataPoint>>();
             CanvasMesurements = new Point(WIDTH, HEIGHT);
@@ -96,6 +119,7 @@ namespace K_nearest_neighbors.ViewModels
             }
 
             ClasifyPoints(Points);
+
         }
 
         private void ClasifyPoints(BindableCollection<ColoredDataPoint> points)
@@ -143,6 +167,11 @@ namespace K_nearest_neighbors.ViewModels
 
         public void ExecuteCalculation()
         {
+            if (!_classifiedDataPoints.ContainsKey(-1))
+                return;
+            if(_classifiedDataPoints[-1].Count == 0 )
+                return;
+
             //getting all unclassified objects
             foreach(var unclassifiedData in _classifiedDataPoints[-1])
             {

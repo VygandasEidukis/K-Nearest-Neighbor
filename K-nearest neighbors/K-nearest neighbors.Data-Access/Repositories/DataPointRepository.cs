@@ -16,6 +16,13 @@ namespace K_nearest_neighbors.Data_Access.Repositories
 
         }
 
+        public async void CreateNewDataPoint(DataPointDto dataPointDto)
+        {
+            var dataPoint = new DataPoint(dataPointDto);
+            await Add(dataPoint);
+            await SaveChanges();
+        }
+
         public List<IGenericDto> GetAllDto()
         {
             var dataPoints = base.GetAll();

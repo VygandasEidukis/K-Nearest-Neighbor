@@ -63,7 +63,12 @@
             <TextBlock
             Text="{Binding CurrentKValue}" />
             <Button x:Name="ExecuteCalculation" Content="Process" Width="50" Margin="10,0"></Button>
-            
+
+            <TextBlock Margin="10,0" Width="50" Text="{Binding NewPoint.X}"></TextBlock>
+            <Slider Minimum="1" Maximum="{Binding PointLimits.X}" Value="{Binding NewPoint.X}" TickFrequency="0.1" Width="250"></Slider>
+            <TextBlock Margin="10,0" Width="50" Text="{Binding NewPoint.Y}"></TextBlock>
+            <Slider Minimum="1" Value="{Binding NewPoint.Y}" Maximum="{Binding PointLimits.Y}" TickFrequency="0.1" Width="250"></Slider>
+            <Button x:Name="AddPoint" Content="Add" Margin="5,0"></Button>
         </StackPanel>
     </Grid>
 </Window>
