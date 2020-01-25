@@ -155,6 +155,7 @@
     <Compile Include="Models\IDtoConvertable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\DataPointRepository.cs" />
+    <Compile Include="Repositories\FileReader.cs" />
     <Compile Include="Repositories\GenericRepository.cs" />
   </ItemGroup>
   <ItemGroup>

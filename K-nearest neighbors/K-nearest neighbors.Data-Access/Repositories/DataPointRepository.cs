@@ -16,7 +16,7 @@ namespace K_nearest_neighbors.Data_Access.Repositories
 
         }
 
-        public async void CreateNewDataPoint(DataPointDto dataPointDto)
+        public async Task CreateNewDataPoint(DataPointDto dataPointDto)
         {
             var dataPoint = new DataPoint(dataPointDto);
             await Add(dataPoint);
@@ -47,7 +47,7 @@ namespace K_nearest_neighbors.Data_Access.Repositories
             return point;
         }
 
-        public async void SaveAssignedClassification(int id, int assignedClassification)
+        public async Task SaveAssignedClassification(int id, int assignedClassification)
         {
             DataPoint dataPoint = base.GetQueryables().Where(x => x.Id == id).SingleOrDefault();
             dataPoint.AssignedClassification = assignedClassification;
