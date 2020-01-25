@@ -11,5 +11,6 @@ namespace K_nearest_neighbors.Common.Repositories
     {
         List<IGenericDto> GetAllDto();
         Point GetPointLimits();
+        void SaveAssignedClassification(int id, int assignedClassification);
     }
 }

@@ -15,6 +15,20 @@ namespace K_nearest_neighbors.Models
             return distance;
         }
 
+        public static List<ColoredDataPoint> GetClassifiedDataPoints(IEnumerable<ColoredDataPoint> dataPoints)
+        {
+            var classifiedDataPoints = new List<ColoredDataPoint>();
+            foreach(var dataPoint in dataPoints)
+            {
+                if(dataPoint.AssignedClassification != null)
+                {
+                    classifiedDataPoints.Add(dataPoint);
+                }
+            }
+
+            return classifiedDataPoints;
+        }
+
         public static IEnumerable<ColoredDataPoint> GetSmallestDistances(IEnumerable<ColoredDataPoint> distancedObjects, int amount)
         {
             var leastDistant = new List<ColoredDataPoint>();
@@ -47,7 +61,7 @@ namespace K_nearest_neighbors.Models
 
             possibleClassifications = possibleClassifications.OrderByDescending(x => x.Value.Count()).ToDictionary(x => x.Key, x=> x.Value);
 
-            int value = possibleClassifications[0].Count();
+            int value = possibleClassifications.FirstOrDefault().Value.Count();
             int repeats = 0;
             foreach(var classification in possibleClassifications)
             {

@@ -39,5 +39,13 @@ namespace K_nearest_neighbors.Data_Access.Repositories
 
             return point;
         }
+
+        public async void SaveAssignedClassification(int id, int assignedClassification)
+        {
+            DataPoint dataPoint = base.GetQueryables().Where(x => x.Id == id).SingleOrDefault();
+            dataPoint.AssignedClassification = assignedClassification;
+            await Update(dataPoint);
+            await SaveChanges();
+        }
     }
 }

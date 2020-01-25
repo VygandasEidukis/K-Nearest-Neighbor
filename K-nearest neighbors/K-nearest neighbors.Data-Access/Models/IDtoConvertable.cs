@@ -10,5 +10,6 @@ namespace K_nearest_neighbors.Data_Access.Models
     public interface IDtoConvertable
     {
         IGenericDto ToDto();
+        void FromDto(IGenericDto dto);
     }
 }

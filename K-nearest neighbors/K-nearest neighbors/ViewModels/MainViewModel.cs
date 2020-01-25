@@ -161,15 +161,20 @@ namespace K_nearest_neighbors.ViewModels
                 }
 
                 AssignClassification(unclassifiedData);
+                var pointRepository = new DataPointRepository(new ClassificationContext());
+                if (unclassifiedData.AssignedClassification == null)
+                    throw new Exception("the assigning failed");
+                pointRepository.SaveAssignedClassification(unclassifiedData.Id, (int)unclassifiedData.AssignedClassification);
             }
+
+            GetPoints();
         }
 
         private void AssignClassification(DataPointDto unassignedDataPoint)
         {
-            var compeatingDataPoints = DataController.GetSmallestDistances(Points, CurrentKValue);
+            var ClassifiedDataPoints = DataController.GetClassifiedDataPoints(Points);
+            var compeatingDataPoints = DataController.GetSmallestDistances(ClassifiedDataPoints, CurrentKValue);
             unassignedDataPoint.AssignedClassification = DataController.ExtractClassification(compeatingDataPoints);
-
-            //(unassignedDataPoint as ColoredDataPoint).brush = _classifiedDataPoints[(int)unassignedDataPoint.AssignedClassification][0].brush;
         }
     }
 }
