@@ -34,10 +34,6 @@
                     x:Name="RefreshColors"
                     Margin="10,0"
                     Content="Refresh colors" />
-                <Button
-                    x:Name="AddRandomDataPoint"
-                    Margin="10,0"
-                    Content="Add Random DataPoint" />
             </StackPanel>
         </ToolBar>
         <ItemsControl

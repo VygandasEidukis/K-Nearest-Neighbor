@@ -145,31 +145,19 @@ namespace K_nearest_neighbors.ViewModels
             PrepareWindow();
         }
 
-        public void AddRandomDataPoint()
-        {
-            if(Points.Count() > 0)
-            {
-                Random random = new Random();
-                SavePoint(new DataPointDto() { X = random.Next(0, (int)PointLimits.X), Y = random.Next(0, (int)PointLimits.Y) });
-                PrepareWindow();
-            }
-        }
-
-        public void AddDataPointFromCanvas(Canvas canvas)
+        #region Event
+        public async void AddDataPointFromCanvas(Canvas canvas)
         {
             if (PointLimits == null)
                 PointLimits = new Point(WIDTH, HEIGHT);
 
-            if (System.Windows.MessageBox.Show("Are you sure you want to add datapoint?", "Warning", System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Question) == System.Windows.MessageBoxResult.Yes)
-            {
-                var mousePosition = Mouse.GetPosition(canvas);
-                DataPointDto pointDto = new DataPointDto();
-                pointDto.X = (float)(PanelX / ((WIDTH - 20) + 10)) * PointLimits.X;
-                pointDto.Y = (float)(PanelY / ((HEIGHT - 20) + 10)) * PointLimits.Y;
+            var mousePosition = Mouse.GetPosition(canvas);
+            DataPointDto pointDto = new DataPointDto();
+            pointDto.X = (float)(PanelX / ((WIDTH - 20) + 10)) * PointLimits.X;
+            pointDto.Y = (float)(PanelY / ((HEIGHT - 20) + 10)) * PointLimits.Y;
 
-                SavePoint(pointDto);
-                PrepareWindow();
-            }
+            await SavePoint(pointDto);
+            PrepareWindow();
         }
 
         public void RefreshColors()
@@ -188,7 +176,7 @@ namespace K_nearest_neighbors.ViewModels
             {
                 var dataPoints = FileReader.ReadFromFileDto();
                 var pointRepository = new DataPointRepository(new ClassificationContext());
-                foreach(var pnt in dataPoints)
+                foreach (var pnt in dataPoints)
                 {
                     SavePoint(pnt);
                 }
@@ -200,6 +188,45 @@ namespace K_nearest_neighbors.ViewModels
             }
         }
 
+        #endregion
+
+        private void PrepareWindow()
+        {
+            InitializeBaseVariables();
+            GetPoints();
+            SetPointClassification(Points);
+            SetDataPointColors();
+            if (Points != null)
+                MaxPoints = 10;
+        }
+
+        private void InitializeBaseVariables()
+        {
+            DataPointLines = new ObservableCollection<DataPointLine>();
+            Points = new BindableCollection<ColoredDataPoint>();
+            _classifiedDataPoints = new Dictionary<int, List<ColoredDataPoint>>();
+            CanvasMesurements = new Point(WIDTH, HEIGHT);
+        }
+
+        private void GetPoints()
+        {
+            var pointRepository = new DataPointRepository(new ClassificationContext());
+            var dataPoints = pointRepository.GetAllDto();
+            PointLimits = pointRepository.GetPointLimits();
+
+            foreach (var point in dataPoints)
+            {
+                PointFitToCanvas(point);
+                Points.Add(new ColoredDataPoint((DataPointDto)point));
+            }
+        }
+
+        private void PointFitToCanvas(IGenericDto point)
+        {
+            (point as DataPointDto).X = ((point as DataPointDto).X / PointLimits.X) * (WIDTH - 20) + 10;
+            (point as DataPointDto).Y = ((point as DataPointDto).Y / PointLimits.Y) * (HEIGHT - 20) + 10;
+        }
+
         public async void AddPoint()
         {
             var pointRepository = new DataPointRepository(new ClassificationContext());
@@ -208,24 +235,10 @@ namespace K_nearest_neighbors.ViewModels
             PrepareWindow();
         }
 
-        private async void SavePoint(DataPointDto point)
+        private async Task SavePoint(DataPointDto point)
         {
             var pointRepository = new DataPointRepository(new ClassificationContext());
             await pointRepository.CreateNewDataPoint(point);
-        }
-
-        private void PrepareWindow()
-        {
-            Thread.Sleep(100);
-            DataPointLines = new ObservableCollection<DataPointLine>();
-            Points = new BindableCollection<ColoredDataPoint>();
-            _classifiedDataPoints = new Dictionary<int, List<ColoredDataPoint>>();
-            CanvasMesurements = new Point(WIDTH, HEIGHT);
-            GetPoints();
-            SetPointClassification(Points);
-            SetDataPointColors();
-            if (Points != null)
-                MaxPoints = 10;
         }
 
         public void DrawLines(ColoredDataPoint baseDataPoint)
@@ -241,32 +254,6 @@ namespace K_nearest_neighbors.ViewModels
             foreach (var compeatingDataPoint in compeatingDataPoints)
             {
                 DataPointLines.Add(new DataPointLine(baseDataPoint, compeatingDataPoint, 5));
-            }
-        }
-
-        private bool CanDrawLines(ColoredDataPoint baseDataPoint)
-        {
-            if (!_classifiedDataPoints.ContainsKey(-1))
-                return false;
-            if (_classifiedDataPoints[-1].Count() == 0)
-                return false;
-            if (Points.Count() == _classifiedDataPoints[-1].Count())
-                return false;
-            if (baseDataPoint.AssignedClassification != null)
-                return false;
-            return true;
-        }
-
-        private void GetPoints()
-        {
-            var pointRepository = new DataPointRepository(new ClassificationContext());
-            PointLimits = pointRepository.GetPointLimits();
-            var t = pointRepository.GetAllDto();
-            foreach (var tt in t)
-            {
-                (tt as DataPointDto).X = ((tt as DataPointDto).X / PointLimits.X) * (WIDTH - 20) + 10;
-                (tt as DataPointDto).Y = ((tt as DataPointDto).Y / PointLimits.Y) * (HEIGHT - 20) + 10;
-                Points.Add(new ColoredDataPoint((DataPointDto)tt));
             }
         }
 
@@ -358,6 +345,26 @@ namespace K_nearest_neighbors.ViewModels
             }
         }
 
+        private void AssignClassification(DataPointDto unassignedDataPoint)
+        {
+            var ClassifiedDataPoints = DataController.GetClassifiedDataPoints(Points);
+            var compeatingDataPoints = DataController.GetSmallestDistances(ClassifiedDataPoints, CurrentKValue);
+            unassignedDataPoint.AssignedClassification = DataController.ExtractClassification(compeatingDataPoints);
+        }
+
+        private bool CanDrawLines(ColoredDataPoint baseDataPoint)
+        {
+            if (!_classifiedDataPoints.ContainsKey(-1))
+                return false;
+            if (_classifiedDataPoints[-1].Count() == 0)
+                return false;
+            if (Points.Count() == _classifiedDataPoints[-1].Count())
+                return false;
+            if (baseDataPoint.AssignedClassification != null)
+                return false;
+            return true;
+        }
+
         private bool DoesDataExist()
         {
             if (!_classifiedDataPoints.ContainsKey(-1))
@@ -367,11 +374,6 @@ namespace K_nearest_neighbors.ViewModels
             return true;
         }
 
-        private void AssignClassification(DataPointDto unassignedDataPoint)
-        {
-            var ClassifiedDataPoints = DataController.GetClassifiedDataPoints(Points);
-            var compeatingDataPoints = DataController.GetSmallestDistances(ClassifiedDataPoints, CurrentKValue);
-            unassignedDataPoint.AssignedClassification = DataController.ExtractClassification(compeatingDataPoints);
-        }
+
     }
 }
