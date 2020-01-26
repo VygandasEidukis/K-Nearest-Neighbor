@@ -5,6 +5,7 @@ using K_nearest_neighbors.Data_Access.Repositories;
 using K_nearest_neighbors.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
@@ -54,10 +55,20 @@ namespace K_nearest_neighbors.ViewModels
             }
         }
 
+        private ObservableCollection<DataPointLine> _dataPointLines;
+
+        public ObservableCollection<DataPointLine> DataPointLines
+        {
+            get { return _dataPointLines; }
+            set 
+            { 
+                _dataPointLines = value;
+                NotifyOfPropertyChange(() => DataPointLines);
+            }
+        }
+
 
         private Dictionary<int, List<ColoredDataPoint>> _classifiedDataPoints;
-
-        public int DifferentTypes { get; set; }
 
         private Point _pointLimits;
 
@@ -71,7 +82,22 @@ namespace K_nearest_neighbors.ViewModels
             }
         }
 
-        public int MaxPoints => Points.Count() <= 10 ? Points.Count() : 10;
+        private int _maxPoints;
+
+        public int MaxPoints
+        {
+            get { return _maxPoints; }
+            set 
+            {
+                if (Points == null || Points.Count() == null)
+                    return;
+
+                _maxPoints = Points.Count() <= 10 ? Points.Count() : 10;
+                NotifyOfPropertyChange(() => MaxPoints);
+            }
+        }
+
+        public int DifferentTypes { get; set; }
 
         private int _currentKValue;
 
@@ -191,12 +217,44 @@ namespace K_nearest_neighbors.ViewModels
         private void PrepareWindow()
         {
             Thread.Sleep(100);
+            DataPointLines = new ObservableCollection<DataPointLine>();
             Points = new BindableCollection<ColoredDataPoint>();
             _classifiedDataPoints = new Dictionary<int, List<ColoredDataPoint>>();
             CanvasMesurements = new Point(WIDTH, HEIGHT);
             GetPoints();
-            ClasifyPoints(Points);
-            ColorPoints();
+            SetPointClassification(Points);
+            SetDataPointColors();
+            if (Points != null)
+                MaxPoints = 10;
+        }
+
+        public void DrawLines(ColoredDataPoint baseDataPoint)
+        {
+            if(!CanDrawLines(baseDataPoint))
+                return;
+
+            DataPointLines = new BindableCollection<DataPointLine>();
+
+            CalculateDataPointDistances(baseDataPoint);
+            var ClassifiedDataPoints = DataController.GetClassifiedDataPoints(Points);
+            var compeatingDataPoints = DataController.GetSmallestDistances(ClassifiedDataPoints, CurrentKValue);
+            foreach (var compeatingDataPoint in compeatingDataPoints)
+            {
+                DataPointLines.Add(new DataPointLine(baseDataPoint, compeatingDataPoint, 5));
+            }
+        }
+
+        private bool CanDrawLines(ColoredDataPoint baseDataPoint)
+        {
+            if (!_classifiedDataPoints.ContainsKey(-1))
+                return false;
+            if (_classifiedDataPoints[-1].Count() == 0)
+                return false;
+            if (Points.Count() == _classifiedDataPoints[-1].Count())
+                return false;
+            if (baseDataPoint.AssignedClassification != null)
+                return false;
+            return true;
         }
 
         private void GetPoints()
@@ -212,7 +270,7 @@ namespace K_nearest_neighbors.ViewModels
             }
         }
 
-        private void ClasifyPoints(BindableCollection<ColoredDataPoint> points)
+        private void SetPointClassification(BindableCollection<ColoredDataPoint> points)
         {
             _classifiedDataPoints = new Dictionary<int, List<ColoredDataPoint>>();
             foreach (var point in points)
@@ -237,7 +295,7 @@ namespace K_nearest_neighbors.ViewModels
             DifferentTypes = _classifiedDataPoints.Count();
         }
 
-        private void ColorPoints()
+        private void SetDataPointColors()
         {
             Random random = new Random();
             foreach (var dicItem in _classifiedDataPoints)

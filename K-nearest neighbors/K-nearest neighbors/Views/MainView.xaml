@@ -4,8 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:cal="http://www.caliburnproject.org"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:K_nearest_neighbors.Views"
     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+    xmlns:local="clr-namespace:K_nearest_neighbors.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Width="800"
     Height="450"
@@ -49,29 +49,28 @@
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Canvas
-                        cal:Message.Attach="[Event MouseUp] = [Action AddDataPointFromCanvas($source)]"
                         Width="{Binding CanvasMesurements.X}"
                         Height="{Binding CanvasMesurements.Y}"
-                        Background="AliceBlue" >
+                        Background="AntiqueWhite"
+                        cal:Message.Attach="[Event MouseUp] = [Action AddDataPointFromCanvas($source)]">
                         <i:Interaction.Behaviors>
-                            <local:MouseBehaviour MouseX="{Binding PanelX, Mode=OneWayToSource}"
-                                          MouseY="{Binding PanelY, Mode=OneWayToSource}" />
+                            <local:MouseBehaviour MouseX="{Binding PanelX, Mode=OneWayToSource}" MouseY="{Binding PanelY, Mode=OneWayToSource}" />
                         </i:Interaction.Behaviors>
                     </Canvas>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Button cal:Message.Attach="[Event Click] = [Action DataPointClicked($this)]">
+                    <Button cal:Message.Attach="[Event Click] = [Action DataPointClicked($this)]; [Event MouseEnter] = [Action DrawLines($this)];">
                         <Button.Template>
                             <ControlTemplate>
                                 <Ellipse
                                     Width="10"
                                     Height="10"
                                     Fill="{Binding brush}">
-                                                <Ellipse.RenderTransform>
-                                                    <TranslateTransform X="{Binding X}" Y="{Binding Y}" />
-                                                </Ellipse.RenderTransform>
+                                    <Ellipse.RenderTransform>
+                                        <TranslateTransform X="{Binding X}" Y="{Binding Y}" />
+                                    </Ellipse.RenderTransform>
                                 </Ellipse>
                             </ControlTemplate>
                         </Button.Template>
@@ -79,6 +78,36 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+
+        <!-- added lines -->
+        <ItemsControl
+            Grid.Row="1"
+            Grid.Column="1"
+            Width="{Binding CanvasMesurements.X}"
+            Height="{Binding CanvasMesurements.Y}"
+            ItemsSource="{Binding DataPointLines}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas
+                        Width="{Binding CanvasMesurements.X}"
+                        Height="{Binding CanvasMesurements.Y}"
+                        Background="{x:Null}" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Line
+                        Stroke="Black"
+                        StrokeThickness="1"
+                        X1="{Binding X1}"
+                        X2="{Binding X2}"
+                        Y1="{Binding Y1}"
+                        Y2="{Binding Y2}" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <!-- added lines / -->
+
         <Slider
             Grid.Row="2"
             Grid.Column="1"

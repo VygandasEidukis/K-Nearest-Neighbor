@@ -86,6 +86,7 @@
     </Compile>
     <Compile Include="Models\ColoredDataPoint.cs" />
     <Compile Include="Models\DataController.cs" />
+    <Compile Include="Models\DataPointLine.cs" />
     <Compile Include="Models\IMesurable.cs" />
     <Compile Include="Views\MouseBehaviour.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />

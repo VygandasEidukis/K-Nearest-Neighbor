@@ -39,14 +39,14 @@ namespace K_nearest_neighbors.Models
             {
                 leastDistant.Add(dataObject);
                 i++;
-                if (i > amount)
+                if (i >= amount)
                     break;
             }
 
             return leastDistant;
         }
 
-        public static int ExtractClassification(IEnumerable<DataPointDto> shortestDistances)
+        public static int ExtractClassificationDefault(IEnumerable<DataPointDto> shortestDistances)
         {
             Dictionary<int, List<DataPointDto>> possibleClassifications = ExtractDataToDictionary(shortestDistances);
 
@@ -67,6 +67,27 @@ namespace K_nearest_neighbors.Models
             }
 
             return possibleClassifications.FirstOrDefault().Key;
+        }
+
+        public static int ExtractClassification(IEnumerable<DataPointDto> shortestDistances)
+        {
+            Dictionary<int, List<DataPointDto>> possibleClassifications = ExtractDataToDictionary(shortestDistances);
+
+            List<int> availableClassifications = new List<int>();
+            int maxCount = 0;
+            foreach(var inListClassifications in possibleClassifications.OrderByDescending(x => x.Value.Count))
+            {
+                if (inListClassifications.Value.Count < maxCount)
+                    break;
+                maxCount = inListClassifications.Value.Count;
+                availableClassifications.Add(inListClassifications.Key);
+            }
+
+            if (availableClassifications.Count == 1)
+                return availableClassifications[0];
+
+            Random random = new Random();
+            return availableClassifications[random.Next(0, availableClassifications.Count - 1)];
         }
 
         private static int GetRepeatedDataPointDistanceCount(Dictionary<int, List<DataPointDto>> possibleClassifications)
