@@ -40,7 +40,10 @@ namespace K_nearest_neighbors.Data_Access.Repositories
             Point point = new Point();
             IQueryable<DataPoint> dataPoints = base.GetQueryables();
             if (dataPoints.Count() == 0)
-                throw new Exception("No data points found");
+            {
+                System.Windows.Forms.MessageBox.Show("No data points found", "Fatal error", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Warning);
+                return null;
+            }
             point.X = dataPoints.OrderByDescending(x => x.X).FirstOrDefault().X;
             point.Y = dataPoints.OrderByDescending(y => y.Y).FirstOrDefault().Y;
 

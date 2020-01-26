@@ -5,6 +5,7 @@ using K_nearest_neighbors.Data_Access.Repositories;
 using K_nearest_neighbors.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -58,8 +59,6 @@ namespace K_nearest_neighbors.ViewModels
 
         public int DifferentTypes { get; set; }
 
-        public int MaxPoints => Points.Count();
-
         private Point _pointLimits;
 
         public Point PointLimits
@@ -71,6 +70,8 @@ namespace K_nearest_neighbors.ViewModels
                 NotifyOfPropertyChange(() => PointLimits);
             }
         }
+
+        public int MaxPoints => Points.Count() <= 10 ? Points.Count() : 10;
 
         private int _currentKValue;
 
@@ -118,9 +119,21 @@ namespace K_nearest_neighbors.ViewModels
             PrepareWindow();
         }
 
+        public void AddRandomDataPoint()
+        {
+            if(Points.Count() > 0)
+            {
+                Random random = new Random();
+                SavePoint(new DataPointDto() { X = random.Next(0, (int)PointLimits.X), Y = random.Next(0, (int)PointLimits.Y) });
+                PrepareWindow();
+            }
+        }
+
         public void AddDataPointFromCanvas(Canvas canvas)
         {
-            
+            if (PointLimits == null)
+                PointLimits = new Point(WIDTH, HEIGHT);
+
             if (System.Windows.MessageBox.Show("Are you sure you want to add datapoint?", "Warning", System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Question) == System.Windows.MessageBoxResult.Yes)
             {
                 var mousePosition = Mouse.GetPosition(canvas);
@@ -137,6 +150,7 @@ namespace K_nearest_neighbors.ViewModels
         {
             PrepareWindow();
         }
+
         public void DataPointClicked(ColoredDataPoint coloredDataPoint)
         {
             System.Windows.MessageBox.Show($"ID: {coloredDataPoint.Id}", "Data point id");
