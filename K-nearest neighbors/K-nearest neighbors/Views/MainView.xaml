@@ -2,29 +2,38 @@
     x:Class="K_nearest_neighbors.Views.MainView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:cal="http://www.caliburnproject.org"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:K_nearest_neighbors.Views"
+    xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="MainView"
     Width="800"
     Height="450"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    Title="MainView">
+
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="25"></RowDefinition>
+            <RowDefinition Height="25" />
             <RowDefinition Height="*" />
             <RowDefinition Height="25" />
             <RowDefinition Height="25" />
         </Grid.RowDefinitions>
-
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="10" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="10" />
         </Grid.ColumnDefinitions>
-        <ToolBar  Grid.Row="0" Grid.Column="1">
+        <ToolBar Grid.Row="0" Grid.Column="1">
             <StackPanel Orientation="Horizontal">
-                <Button x:Name="LoadFromFile" Content="Load From File" Margin="10,0"></Button>
+                <Button
+                    x:Name="LoadFromFile"
+                    Margin="10,0"
+                    Content="Load From File" />
+                <Button
+                    x:Name="RefreshColors"
+                    Margin="10,0"
+                    Content="Refresh colors" />
             </StackPanel>
         </ToolBar>
         <ItemsControl
@@ -33,48 +42,81 @@
             Width="{Binding CanvasMesurements.X}"
             Height="{Binding CanvasMesurements.Y}"
             ItemsSource="{Binding Points}">
-
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Canvas
+                        cal:Message.Attach="[Event MouseUp] = [Action AddDataPointFromCanvas($source)]"
                         Width="{Binding CanvasMesurements.X}"
                         Height="{Binding CanvasMesurements.Y}"
-                        Background="AliceBlue" />
+                        Background="AliceBlue" >
+                        <i:Interaction.Behaviors>
+                            <local:MouseBehaviour MouseX="{Binding PanelX, Mode=OneWayToSource}"
+                                          MouseY="{Binding PanelY, Mode=OneWayToSource}" />
+                        </i:Interaction.Behaviors>
+                    </Canvas>
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Ellipse
-                        Width="10"
-                        Height="10"
-                        Fill="{Binding brush}">
-                        <Ellipse.RenderTransform>
-                            <TranslateTransform X="{Binding X}" Y="{Binding Y}" />
-                        </Ellipse.RenderTransform>
-                    </Ellipse>
-
+                    <Button cal:Message.Attach="[Event Click] = [Action DataPointClicked($this)]">
+                        <Button.Template>
+                            <ControlTemplate>
+                                <Ellipse
+                                    Width="10"
+                                    Height="10"
+                                    Fill="{Binding brush}">
+                                                <Ellipse.RenderTransform>
+                                                    <TranslateTransform X="{Binding X}" Y="{Binding Y}" />
+                                                </Ellipse.RenderTransform>
+                                </Ellipse>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
         <Slider
             Grid.Row="2"
             Grid.Column="1"
+            Value="{Binding CurrentKValue}"
             Maximum="{Binding MaxPoints}"
             Minimum="1"
-            TickFrequency="1"
-            Value="{Binding CurrentKValue}" />
+            TickFrequency="1" />
         <StackPanel
             Grid.Row="3"
-            Grid.Column="1" Orientation="Horizontal">
+            Grid.Column="1"
+            Orientation="Horizontal">
+            <TextBlock Text="{Binding CurrentKValue}" />
+            <Button
+                x:Name="ExecuteCalculation"
+                Width="50"
+                Margin="10,0"
+                Content="Process" />
             <TextBlock
-            Text="{Binding CurrentKValue}" />
-            <Button x:Name="ExecuteCalculation" Content="Process" Width="50" Margin="10,0"></Button>
-
-            <TextBlock Margin="10,0" Width="50" Text="{Binding NewPoint.X}"></TextBlock>
-            <Slider Minimum="1" Maximum="{Binding PointLimits.X}" Value="{Binding NewPoint.X}" TickFrequency="0.1" Width="250"></Slider>
-            <TextBlock Margin="10,0" Width="50" Text="{Binding NewPoint.Y}"></TextBlock>
-            <Slider Minimum="1" Value="{Binding NewPoint.Y}" Maximum="{Binding PointLimits.Y}" TickFrequency="0.1" Width="250"></Slider>
-            <Button x:Name="AddPoint" Content="Add" Margin="5,0"></Button>
+                Width="50"
+                Margin="10,0"
+                Text="{Binding NewPoint.X}" />
+            <Slider
+                Width="250"
+                Value="{Binding NewPoint.X}"
+                Maximum="{Binding PointLimits.X}"
+                Minimum="1"
+                TickFrequency="0.1" />
+            <TextBlock
+                Width="50"
+                Margin="10,0"
+                Text="{Binding NewPoint.Y}" />
+            <Slider
+                Width="250"
+                Value="{Binding NewPoint.Y}"
+                Maximum="{Binding PointLimits.Y}"
+                Minimum="1"
+                TickFrequency="0.1" />
+            <Button
+                x:Name="AddPoint"
+                Margin="5,0"
+                Content="Add" />
         </StackPanel>
     </Grid>
+
 </Window>

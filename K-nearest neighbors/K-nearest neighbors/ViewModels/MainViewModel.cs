@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace K_nearest_neighbors.ViewModels
@@ -82,15 +84,62 @@ namespace K_nearest_neighbors.ViewModels
             }
         }
 
+        private float _panelX;
+
+        public float PanelX
+        {
+            get { return _panelX; }
+            set 
+            { 
+                _panelX = value;
+                NotifyOfPropertyChange(() => PanelX);
+            }
+        }
+
+        private float _panelY;
+
+        public float PanelY
+        {
+            get { return _panelY; }
+            set 
+            { 
+                _panelY = value;
+                NotifyOfPropertyChange(() => PanelY);
+            }
+        }
+
         public float WIDTH => 600;
         public float HEIGHT => 300;
-
 
         public MainViewModel()
         {
             NewPoint = new DataPointDto() { X = 1, Y = 1};
             CurrentKValue = 1;
             PrepareWindow();
+        }
+
+        public void AddDataPointFromCanvas(Canvas canvas)
+        {
+            
+            if (System.Windows.MessageBox.Show("Are you sure you want to add datapoint?", "Warning", System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Question) == System.Windows.MessageBoxResult.Yes)
+            {
+                var mousePosition = Mouse.GetPosition(canvas);
+                DataPointDto pointDto = new DataPointDto();
+                pointDto.X = (float)(PanelX / ((WIDTH - 20) + 10)) * PointLimits.X;
+                pointDto.Y = (float)(PanelY / ((HEIGHT - 20) + 10)) * PointLimits.Y;
+
+                SavePoint(pointDto);
+                PrepareWindow();
+            }
+        }
+
+        public void RefreshColors()
+        {
+            PrepareWindow();
+        }
+        public void DataPointClicked(ColoredDataPoint coloredDataPoint)
+        {
+            System.Windows.MessageBox.Show($"ID: {coloredDataPoint.Id}", "Data point id");
         }
 
         public void LoadFromFile()

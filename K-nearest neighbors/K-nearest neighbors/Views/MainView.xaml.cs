@@ -23,5 +23,10 @@ namespace K_nearest_neighbors.Views
         {
             InitializeComponent();
         }
+
+        private void Test1_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+
+        }
     }
 }
