@@ -1,10 +1,8 @@
 ﻿using K_nearest_neighbors.Common.Models;
 using K_nearest_neighbors.Common.Repositories;
 using K_nearest_neighbors.Data_Access.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace K_nearest_neighbors.Data_Access.Repositories
@@ -15,11 +13,11 @@ namespace K_nearest_neighbors.Data_Access.Repositories
         {
 
         }
-
+        
         public async Task CreateNewDataPoint(DataPointDto dataPointDto)
         {
             var dataPoint = new DataPoint(dataPointDto);
-            await Add(dataPoint);
+            await Add(dataPoint).ConfigureAwait(true);
             await SaveChanges();
         }
 
@@ -27,7 +25,7 @@ namespace K_nearest_neighbors.Data_Access.Repositories
         {
             var dataPoints = base.GetAll();
             List<IGenericDto> dataPointsDto = new List<IGenericDto>();
-            foreach(var dataPoint in dataPoints)
+            foreach (var dataPoint in dataPoints)
             {
                 dataPointsDto.Add(dataPoint.ToDto());
             }

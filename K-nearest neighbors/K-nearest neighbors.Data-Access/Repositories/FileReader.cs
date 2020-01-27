@@ -1,12 +1,9 @@
 ﻿using K_nearest_neighbors.Common.Models;
-using K_nearest_neighbors.Common.Repositories;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace K_nearest_neighbors.Data_Access.Repositories
 {

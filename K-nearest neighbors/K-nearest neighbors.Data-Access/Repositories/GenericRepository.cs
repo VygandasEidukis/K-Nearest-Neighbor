@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace K_nearest_neighbors.Data_Access.Repositories
@@ -50,6 +49,9 @@ namespace K_nearest_neighbors.Data_Access.Repositories
             return await this.Context.SaveChangesAsync();
         }
 
-        public void Dispose() => Context.Dispose();
+        public void Dispose()
+        {
+            Context.Dispose();
+        }
     }
 }

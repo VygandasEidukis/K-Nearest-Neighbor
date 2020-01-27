@@ -6,9 +6,7 @@ using K_nearest_neighbors.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -151,16 +149,24 @@ namespace K_nearest_neighbors.ViewModels
         #region Event
         public async void AddDataPointFromCanvas(Canvas canvas)
         {
-            if (PointLimits == null)
-                PointLimits = new Point(WIDTH, HEIGHT);
+            try
+            {
+                if (PointLimits == null)
+                    PointLimits = new Point(WIDTH, HEIGHT);
 
-            var mousePosition = Mouse.GetPosition(canvas);
-            DataPointDto pointDto = new DataPointDto();
-            pointDto.X = (float)(PanelX / ((WIDTH - 20) + 10)) * PointLimits.X;
-            pointDto.Y = (float)(PanelY / ((HEIGHT - 20) + 10)) * PointLimits.Y;
+                var mousePosition = Mouse.GetPosition(canvas);
+                DataPointDto pointDto = new DataPointDto();
+                pointDto.X = (float)(PanelX / ((WIDTH - 20) + 10)) * PointLimits.X;
+                pointDto.Y = (float)(PanelY / ((HEIGHT - 20) + 10)) * PointLimits.Y;
 
-            await SavePoint(pointDto);
-            PrepareWindow();
+                await SavePoint(pointDto);
+                PrepareWindow();
+            }
+            catch
+            {
+                System.Windows.MessageBox.Show("Failed to add a datapoint");
+            }
+            
         }
 
         public void RefreshColors()
