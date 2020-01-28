@@ -2,6 +2,8 @@
 
 K-NN is learning classification algorthm to find nearest neighbors and assign itself to appropriate type of data
 
+![alt K-NN-SoftwareImage](https://i.imgur.com/HscipTy.png)
+
 # Wiki page
 
 [Wiki-Page](https://en.wikipedia.org/wiki/K-nearest_neighbors_algorithm "WIKI page")
