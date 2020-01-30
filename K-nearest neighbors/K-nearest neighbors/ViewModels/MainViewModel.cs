@@ -99,10 +99,11 @@ namespace K_nearest_neighbors.ViewModels
             get { return _maxPoints; }
             set
             {
-                if (Points == null || Points.Count() == null)
+                if (Points == null )
                     return;
-
-                _maxPoints = Points.Count() <= 10 ? Points.Count() : 10;
+                if (value > 10)
+                    _maxPoints = 10;
+                _maxPoints = value;
                 NotifyOfPropertyChange(() => MaxPoints);
             }
         }
@@ -222,8 +223,7 @@ namespace K_nearest_neighbors.ViewModels
             GetPoints();
             SetPointClassification(Points);
             SetDataPointColors();
-            if (Points != null)
-                MaxPoints = 10;
+            MaxPoints = Points.Where(x => x.AssignedClassification != null).Count();
         }
 
         private void InitializeBaseVariables()
