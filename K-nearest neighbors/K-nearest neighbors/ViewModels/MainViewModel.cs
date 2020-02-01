@@ -100,7 +100,7 @@ namespace K_nearest_neighbors.ViewModels
             get { return _maxPoints; }
             set
             {
-                if (Points == null )
+                if (Points == null)
                     return;
                 if (value > 10)
                     _maxPoints = 10;
@@ -143,7 +143,7 @@ namespace K_nearest_neighbors.ViewModels
 
         public MainViewModel()
         {
-            NewPoint = new DataPointDto() { X = 1, Y = 1};
+            NewPoint = new DataPointDto() { X = 1, Y = 1 };
             CurrentKValue = 1;
             PrepareWindow();
         }
@@ -158,8 +158,8 @@ namespace K_nearest_neighbors.ViewModels
 
                 var mousePosition = Mouse.GetPosition(canvas);
                 DataPointDto pointDto = new DataPointDto();
-                pointDto.X = (float)(PanelX / ((WIDTH - 20) + 10)) * PointLimits.X;
-                pointDto.Y = (float)(PanelY / ((HEIGHT - 20) + 10)) * PointLimits.Y;
+                pointDto.X = (PanelX / ((WIDTH - 20) + 10)) * PointLimits.X;
+                pointDto.Y = (PanelY / ((HEIGHT - 20) + 10)) * PointLimits.Y;
 
                 await SavePoint(pointDto);
                 PrepareWindow();
@@ -168,7 +168,7 @@ namespace K_nearest_neighbors.ViewModels
             {
                 System.Windows.MessageBox.Show("Failed to add a datapoint");
             }
-            
+
         }
 
         public void RefreshColors()
@@ -176,9 +176,17 @@ namespace K_nearest_neighbors.ViewModels
             PrepareWindow();
         }
 
-        public void DataPointClicked(ColoredDataPoint coloredDataPoint)
+        public void AssignRandomClassification()
         {
-            System.Windows.MessageBox.Show($"ID: {coloredDataPoint.Id}", "Data point id");
+            var point = Points.Where(x => x.AssignedClassification == null).ToList();
+
+            if (point.Count() < 1)
+                return;
+            Random random = new Random();
+            int pointId = random.Next(0, point.Count());
+            point[pointId].AssignedClassification = random.Next(1, 2);
+            UpdateDataPointsAsync(point[pointId]);
+            PrepareWindow();
         }
 
         public void LoadFromFile()
@@ -201,6 +209,8 @@ namespace K_nearest_neighbors.ViewModels
 
         public void ExecuteCalculation()
         {
+            if (Points.Count() == Points.Where(x => x.AssignedClassification == null).Count())
+                return;
             if (!DoesDataExist())
                 return;
 
@@ -283,7 +293,7 @@ namespace K_nearest_neighbors.ViewModels
                 _classifiedDataPoints[(int)point.AssignedClassification].Add(point);
             }
         }
-        
+
         private void ProcessClassificationAsync()
         {
             //getting all unclassified objects
@@ -298,7 +308,7 @@ namespace K_nearest_neighbors.ViewModels
         private static async void UpdateDataPointsAsync(ColoredDataPoint unclassifiedData)
         {
             if (unclassifiedData.AssignedClassification == null)
-                throw new Exception("the assigning failed"); 
+                throw new Exception("the assigning failed");
             var pointRepository = new DataPointRepository(new ClassificationContext());
             await pointRepository.SaveAssignedClassification(unclassifiedData.Id, (int)unclassifiedData.AssignedClassification);
         }
