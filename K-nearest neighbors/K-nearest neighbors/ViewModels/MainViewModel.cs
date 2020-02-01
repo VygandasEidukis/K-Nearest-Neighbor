@@ -76,6 +76,7 @@ namespace K_nearest_neighbors.ViewModels
             set
             {
                 _currentKValue = value;
+                DataPointLines = new ObservableCollection<DataPointLine>();
                 NotifyOfPropertyChange(() => CurrentKValue);
             }
         }

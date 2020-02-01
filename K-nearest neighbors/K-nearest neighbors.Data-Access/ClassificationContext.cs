@@ -16,6 +16,7 @@ namespace K_nearest_neighbors.Data_Access
 
         public ClassificationContext(): base("name=_mainDB")
         {
+            Database.SetInitializer(new CreateDatabaseIfNotExists<ClassificationContext>());
         }
     }
 }
