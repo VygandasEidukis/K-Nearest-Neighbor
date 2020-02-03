@@ -7,12 +7,12 @@ using System.Windows;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Caliburn.Micro Template Pack For WPF")]
-[assembly: AssemblyDescription("Caliburn.Micro Template Pack for WPF contains a comprehensive collection of Project Templates and Code Snippets for developing WPF application using Caliburn.Micro")]
+[assembly: AssemblyTitle("KNN")]
+[assembly: AssemblyDescription("KNN application")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("HashTaurus")]
+[assembly: AssemblyCompany("Taozipie")]
 [assembly: AssemblyProduct("Bootstrapper.MEF")]
-[assembly: AssemblyCopyright("Copyright ©HashTaurus 2018")]
+[assembly: AssemblyCopyright("Copyright ©Vygandas Eidukis")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Windows;
 // Setting ComVisible to false makes the types in this assembly not visible
 // to COM components.  If you need to access a type in this assembly from
 // COM, set the ComVisible attribute to true on that type.
-[assembly: ComVisible(false)]
+[assembly: ComVisible(true)]
 
 //In order to begin building localizable applications, set
 //<UICulture>CultureYouAreCodingWith</UICulture> in your .csproj file

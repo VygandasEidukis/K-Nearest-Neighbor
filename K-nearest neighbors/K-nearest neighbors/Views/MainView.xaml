@@ -61,7 +61,8 @@
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Button cal:Message.Attach="[Event Click] = [Action DataPointClicked($this)]; [Event MouseEnter] = [Action DrawLines($this)];">
+                    <!-- [Event Click] = [Action DataPointClicked($this)]; -->
+                    <Button cal:Message.Attach=" [Event MouseEnter] = [Action DrawLines($this)];">
                         <Button.Template>
                             <ControlTemplate>
                                 <Ellipse
